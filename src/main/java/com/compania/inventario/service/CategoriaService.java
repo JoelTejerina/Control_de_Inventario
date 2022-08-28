@@ -6,6 +6,8 @@ import com.compania.inventario.response.CategoriaResponseRest;
 
 public interface CategoriaService {
 	
-	public ResponseEntity<CategoriaResponseRest> buscar();
+	ResponseEntity<CategoriaResponseRest> recuperarCategorias();
+	
+	ResponseEntity<CategoriaResponseRest> buscarCategoriaPorId(Long id);
 	
 }

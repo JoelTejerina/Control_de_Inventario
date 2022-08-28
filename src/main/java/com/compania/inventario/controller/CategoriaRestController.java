@@ -3,6 +3,7 @@ package com.compania.inventario.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,9 +18,16 @@ public class CategoriaRestController {
 	CategoriaService categoriaService;
 	
 	@GetMapping("/categorias")
-	public ResponseEntity<CategoriaResponseRest> buscarCategorias(){
+	public ResponseEntity<CategoriaResponseRest> recuperarCategorias(){
 		
-		ResponseEntity<CategoriaResponseRest> responseEntity = categoriaService.buscar();
+		ResponseEntity<CategoriaResponseRest> responseEntity = categoriaService.recuperarCategorias();
+		return responseEntity;
+	}
+	
+	@GetMapping("/categorias/{id}")
+	public ResponseEntity<CategoriaResponseRest> buscarCategorias(@PathVariable Long id){
+		
+		ResponseEntity<CategoriaResponseRest> responseEntity = categoriaService.buscarCategoriaPorId(id);
 		return responseEntity;
 	}
 }
