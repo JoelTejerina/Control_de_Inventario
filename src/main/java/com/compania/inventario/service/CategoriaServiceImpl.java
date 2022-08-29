@@ -13,7 +13,7 @@ import com.compania.inventario.repository.CategoriaRepository;
 import com.compania.inventario.response.CategoriaResponseRest;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional(rollbackFor = Exception.class)
 public class CategoriaServiceImpl implements CategoriaService{
 	
 	@Autowired
@@ -56,7 +56,7 @@ public class CategoriaServiceImpl implements CategoriaService{
 
 			} else {
 				responseRest.setMetadata("Error", "-1", "Categoria no encontrada");
-				
+	
 				return new ResponseEntity<CategoriaResponseRest>(responseRest, HttpStatus.NOT_FOUND);
 			}
 
@@ -70,4 +70,35 @@ public class CategoriaServiceImpl implements CategoriaService{
 		return new ResponseEntity<CategoriaResponseRest>(responseRest, HttpStatus.OK);
 	}
 
+	@Override
+	public ResponseEntity<CategoriaResponseRest> guardarCategoria(Categoria categoria) {
+		CategoriaResponseRest responseRest = new CategoriaResponseRest();
+		List<Categoria> categorias = new ArrayList<>();
+				
+		try {
+			Categoria categoriaGuardar = categoriaRepository.save(categoria);
+			
+			if(categoriaGuardar != null) {
+				categorias.add(categoriaGuardar);
+				responseRest.getCategoriaResponse().setCategorias(categorias);
+				
+				responseRest.setMetadata("Respuesta exitosa", "200", "Categoria guardad");
+
+			}
+			else {
+				responseRest.setMetadata("Error", "-1", "Categoria no guardada");
+				
+				return new ResponseEntity<CategoriaResponseRest>(responseRest, HttpStatus.BAD_REQUEST);
+			}
+
+		} catch (Exception e) {
+			responseRest.setMetadata("Error", "-1", "Error al guardar categoria");
+			e.getStackTrace();
+			
+			return new ResponseEntity<CategoriaResponseRest>(responseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<CategoriaResponseRest>(responseRest, HttpStatus.OK);
+
+	}
 }
