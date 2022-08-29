@@ -15,4 +15,7 @@ public interface CategoriaService {
 	
 	ResponseEntity<CategoriaResponseRest> actualizarCategoria(Categoria categoria, Long id);
 	
+	ResponseEntity<CategoriaResponseRest> borrarCategoria(Long id);
+
+	
 }

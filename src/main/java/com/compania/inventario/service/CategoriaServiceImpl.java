@@ -142,4 +142,24 @@ public class CategoriaServiceImpl implements CategoriaService{
 		
 		return new ResponseEntity<CategoriaResponseRest>(responseRest, HttpStatus.OK);
 	}
+
+	@Override
+	public ResponseEntity<CategoriaResponseRest> borrarCategoria(Long id) {
+		
+		CategoriaResponseRest responseRest = new CategoriaResponseRest();
+		
+		try {
+			
+			categoriaRepository.deleteById(id);
+			responseRest.setMetadata("Respuesta exitosa", "200", "Registro eliminado");
+			
+		} catch (Exception e) {
+			responseRest.setMetadata("Error", "-1", "Error al eliminar");
+			e.getStackTrace();
+			
+			return new ResponseEntity<CategoriaResponseRest>(responseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<CategoriaResponseRest>(responseRest, HttpStatus.OK);
+	}
 }
