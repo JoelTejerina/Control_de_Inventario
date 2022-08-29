@@ -13,4 +13,6 @@ public interface CategoriaService {
 	
 	ResponseEntity<CategoriaResponseRest> guardarCategoria(Categoria categoria);
 	
+	ResponseEntity<CategoriaResponseRest> actualizarCategoria(Categoria categoria, Long id);
+	
 }
