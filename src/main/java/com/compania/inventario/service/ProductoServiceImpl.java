@@ -17,6 +17,7 @@ import com.compania.inventario.bo.Categoria;
 import com.compania.inventario.bo.Producto;
 import com.compania.inventario.repository.CategoriaRepository;
 import com.compania.inventario.repository.ProductoRepository;
+import com.compania.inventario.response.CategoriaResponseRest;
 import com.compania.inventario.response.ProductoResponseRest;
 import com.compania.inventario.utility.ImagenUtility;
 
@@ -155,7 +156,20 @@ public class ProductoServiceImpl implements ProductoService {
 
 	@Override
 	public ResponseEntity<ProductoResponseRest> borrarProducto(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		ProductoResponseRest responseRest = new ProductoResponseRest();
+		
+		try {
+			
+			productoRepository.deleteById(id);
+			responseRest.setMetadata("Respuesta exitosa", "200", "Registro eliminado");
+			
+		} catch (Exception e) {
+			responseRest.setMetadata("Error", "-1", "Error al eliminar");
+			e.getStackTrace();
+			
+			return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.OK);
 	}
 }
