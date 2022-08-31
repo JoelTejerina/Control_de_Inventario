@@ -16,6 +16,7 @@ import com.compania.inventario.bo.Producto;
 import com.compania.inventario.repository.CategoriaRepository;
 import com.compania.inventario.repository.ProductoRepository;
 import com.compania.inventario.response.ProductoResponseRest;
+import com.compania.inventario.utility.ImagenUtility;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -35,8 +36,34 @@ public class ProductoServiceImpl implements ProductoService {
 
 	@Override
 	public ResponseEntity<ProductoResponseRest> buscarProductoPorId(Long id) {
-		// TODO Auto-generated method stub
-				return null;
+		ProductoResponseRest responseRest = new ProductoResponseRest();
+		List<Producto> productos = new ArrayList<>();
+				
+		try {
+			Optional<Producto> productoOptional = productoRepository.findById(id);
+			
+			if (productoOptional.isPresent()) {
+				
+				byte[] imagenDescomprimida = ImagenUtility.decompressZLib(productoOptional.get().getImagen());
+				productoOptional.get().setImagen(imagenDescomprimida);
+				productos.add(productoOptional.get());
+				responseRest.getProductoResponse().setProductos(productos);
+				responseRest.setMetadata("Respuesta exitosa", "200", "Producto encontrado");
+
+			} else {
+				responseRest.setMetadata("Error", "-1", "Producto no encontrado");
+	
+				return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.NOT_FOUND);
+			}
+
+		} catch (Exception e) {
+			responseRest.setMetadata("Error", "-1", "Error al consultar por id");
+			e.getStackTrace();
+			
+			return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.OK);
 	}
 
 	@Override

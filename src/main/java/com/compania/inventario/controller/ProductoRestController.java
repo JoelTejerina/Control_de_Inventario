@@ -27,6 +27,12 @@ public class ProductoRestController {
 	@Autowired
 	ProductoService productoService;
 	
+	@GetMapping("/productos/{id}")
+	public ResponseEntity<ProductoResponseRest> obtenerProductosPorId(@PathVariable Long id){
+		ResponseEntity<ProductoResponseRest> productoResponse = productoService.buscarProductoPorId(id);
+		return productoResponse;
+	}
+	
 	@PostMapping("/productos")
 	public ResponseEntity<ProductoResponseRest> guardarProducto(
 			@RequestParam("imagen") MultipartFile imagen,
