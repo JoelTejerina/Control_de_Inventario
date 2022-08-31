@@ -1,7 +1,6 @@
 package com.compania.inventario.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +30,12 @@ public class ProductoRestController {
 	public ResponseEntity<ProductoResponseRest> obtenerProductosPorId(@PathVariable Long id){
 		ResponseEntity<ProductoResponseRest> productoResponse = productoService.buscarProductoPorId(id);
 		return productoResponse;
+	}
+	
+	@GetMapping("/productos/filter/{nombre}")
+	public ResponseEntity<ProductoResponseRest> searchByName(@PathVariable String nombre){
+		ResponseEntity<ProductoResponseRest> response = productoService.buscarProductoPorNombre(nombre);
+		return response;
 	}
 	
 	@PostMapping("/productos")

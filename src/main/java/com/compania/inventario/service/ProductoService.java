@@ -11,6 +11,8 @@ public interface ProductoService {
 	
 	ResponseEntity<ProductoResponseRest> buscarProductoPorId(Long id);
 	
+	ResponseEntity<ProductoResponseRest> buscarProductoPorNombre(String nombre);
+	
 	ResponseEntity<ProductoResponseRest> guardarProductoCategoria(Producto producto, Long idCategoria);
 	
 	ResponseEntity<ProductoResponseRest> actualizarProducto(Producto producto, Long id);

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,8 @@ import com.compania.inventario.utility.ImagenUtility;
 @Transactional(rollbackFor = Exception.class)
 public class ProductoServiceImpl implements ProductoService {
 		
+	private static Logger log = LoggerFactory.getLogger(ProductoServiceImpl.class);
+	
 	@Autowired
 	ProductoRepository productoRepository;
 	
@@ -31,7 +35,6 @@ public class ProductoServiceImpl implements ProductoService {
 	@Override
 	public ResponseEntity<ProductoResponseRest> recuperarProductos() {
 		return null;
-		
 	}
 
 	@Override
@@ -64,6 +67,47 @@ public class ProductoServiceImpl implements ProductoService {
 		}
 		
 		return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.OK);
+	}
+	
+	@Override
+	public ResponseEntity<ProductoResponseRest> buscarProductoPorNombre(String nombre) {
+		ProductoResponseRest response = new ProductoResponseRest();
+		List<Producto> list = new ArrayList<>();
+		List<Producto> listAux = new ArrayList<>();
+		
+		try {
+			
+			//search producto by name
+			listAux = productoRepository.findByNameLike(nombre);
+			
+			
+			if( listAux.size() > 0) {
+				
+				listAux.stream().forEach( (p) -> {
+					byte[] imageDescompressed = ImagenUtility.decompressZLib(p.getImagen());
+					p.setImagen(imageDescompressed);
+					list.add(p);
+				});
+				
+				
+				response.getProductoResponse().setProductos(list);
+				response.setMetadata("Respuesta ok", "00", "Productos encontrados");
+				
+			} else {
+				response.setMetadata("respuesta nok", "-1", "Productos no encontrados ");
+				return new ResponseEntity<ProductoResponseRest>(response, HttpStatus.NOT_FOUND);
+			}
+			
+			
+		} catch (Exception e) {
+			e.getStackTrace();
+			response.setMetadata("respuesta nok", "-1", "Error al buscar producto por nombre");
+			return new ResponseEntity<ProductoResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+		
+		return new ResponseEntity<ProductoResponseRest>(response, HttpStatus.OK);
+
 	}
 
 	@Override
@@ -114,5 +158,4 @@ public class ProductoServiceImpl implements ProductoService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }
