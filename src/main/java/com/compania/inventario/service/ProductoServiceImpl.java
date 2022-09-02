@@ -22,6 +22,7 @@ import com.compania.inventario.response.ProductoResponseRest;
 import com.compania.inventario.utility.ImagenUtility;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class ProductoServiceImpl implements ProductoService {
 		
 	private static Logger log = LoggerFactory.getLogger(ProductoServiceImpl.class);
@@ -174,9 +175,57 @@ public class ProductoServiceImpl implements ProductoService {
 	}
 
 	@Override
-	public ResponseEntity<ProductoResponseRest> actualizarProducto(Producto producto, Long id) {
-		// TODO Auto-generated method stub
-		return null;
+	public ResponseEntity<ProductoResponseRest> actualizarProducto(Producto producto, Long id, Long idCategoria) {
+		ProductoResponseRest responseRest = new ProductoResponseRest();
+		List<Producto> productos = new ArrayList<>();
+				
+		try {
+			
+			Optional<Categoria> categoriaOptional = categoriaRepository.findById(idCategoria);
+			
+			if(categoriaOptional.isPresent()) {
+				producto.setCategoria(categoriaOptional.get());
+
+			}else {
+				responseRest.setMetadata("Error", "-1", "Categoria no encontrada asociada al producto");
+				new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.NOT_FOUND);
+			}
+			
+			Optional<Producto> obtenerProducto = productoRepository.findById(id);
+			
+			if(obtenerProducto.isPresent()) {
+				
+				obtenerProducto.get().setNombre(producto.getNombre());
+				obtenerProducto.get().setCategoria(producto.getCategoria());
+				obtenerProducto.get().setPrecio(producto.getPrecio());
+				obtenerProducto.get().setCantidad(producto.getCantidad());
+				obtenerProducto.get().setImagen(producto.getImagen());
+				
+				Producto productoActualizado = productoRepository.save(obtenerProducto.get());
+				
+				if (productoActualizado != null) {
+					productos.add(productoActualizado);
+					responseRest.getProductoResponse().setProductos(productos);
+					responseRest.setMetadata("Respuesta exitosa", "200", "Producto actualizado");	
+				} else {
+					responseRest.setMetadata("Error", "-1", "Producto no actualizado");
+					
+					return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.NOT_FOUND);
+				}
+				
+			} else {
+				responseRest.setMetadata("Error", "-1", "Producto no actualizado");
+				
+				return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.NOT_FOUND);
+			}
+		} catch (Exception e) {
+			responseRest.setMetadata("Error", "-1", "Error al actualizar producto");
+			e.getStackTrace();
+			
+			return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.OK);
 	}
 
 	@Override

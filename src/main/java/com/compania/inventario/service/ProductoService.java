@@ -15,7 +15,7 @@ public interface ProductoService {
 	
 	ResponseEntity<ProductoResponseRest> guardarProductoCategoria(Producto producto, Long idCategoria);
 	
-	ResponseEntity<ProductoResponseRest> actualizarProducto(Producto producto, Long id);
+	ResponseEntity<ProductoResponseRest> actualizarProducto(Producto producto, Long id, Long idCategoria);
 	
 	ResponseEntity<ProductoResponseRest> borrarProducto(Long id);
 }
