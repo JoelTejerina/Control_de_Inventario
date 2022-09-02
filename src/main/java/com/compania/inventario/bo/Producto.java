@@ -39,7 +39,6 @@ public class Producto implements Serializable {
 	
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
-	@Column(name="imagen")
 	private byte[] imagen;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

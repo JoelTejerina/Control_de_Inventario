@@ -22,7 +22,6 @@ import com.compania.inventario.response.ProductoResponseRest;
 import com.compania.inventario.utility.ImagenUtility;
 
 @Service
-@Transactional(rollbackFor = Exception.class)
 public class ProductoServiceImpl implements ProductoService {
 		
 	private static Logger log = LoggerFactory.getLogger(ProductoServiceImpl.class);
@@ -35,7 +34,34 @@ public class ProductoServiceImpl implements ProductoService {
 
 	@Override
 	public ResponseEntity<ProductoResponseRest> recuperarProductos() {
-		return null;
+		ProductoResponseRest responseRest = new ProductoResponseRest();
+		List<Producto> productos = new ArrayList<>();
+		List<Producto> productoAux = new ArrayList<>();
+		
+		try {
+			
+			productoAux = productoRepository.findAll();
+			
+			if( productoAux.size() > 0) {
+			
+					productoAux.stream().forEach( (p) -> {
+					byte[] imageDescomprimida = ImagenUtility.decompressZLib(p.getImagen());
+					p.setImagen(imageDescomprimida);
+					productos.add(p);
+				});
+			} 
+			
+			responseRest.getProductoResponse().setProductos(productos);
+			responseRest.setMetadata("Respuesta exitosa", "200", "Se obtuvo los productos");
+			
+		} catch (Exception e) {
+			responseRest.setMetadata("Error", "-1", "Error al consultar");
+			e.getStackTrace();
+			
+			return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<ProductoResponseRest>(responseRest, HttpStatus.OK);
 	}
 
 	@Override
@@ -73,25 +99,24 @@ public class ProductoServiceImpl implements ProductoService {
 	@Override
 	public ResponseEntity<ProductoResponseRest> buscarProductoPorNombre(String nombre) {
 		ProductoResponseRest response = new ProductoResponseRest();
-		List<Producto> list = new ArrayList<>();
-		List<Producto> listAux = new ArrayList<>();
+		List<Producto> productos = new ArrayList<>();
+		List<Producto> productoAux = new ArrayList<>();
 		
 		try {
 			
-			//search producto by name
-			listAux = productoRepository.findByNameLike(nombre);
+			productoAux = productoRepository.findByNameLike(nombre);
 			
 			
-			if( listAux.size() > 0) {
+			if( productoAux.size() > 0) {
 				
-				listAux.stream().forEach( (p) -> {
+				productoAux.stream().forEach( (p) -> {
 					byte[] imageDescompressed = ImagenUtility.decompressZLib(p.getImagen());
 					p.setImagen(imageDescompressed);
-					list.add(p);
+					productos.add(p);
 				});
 				
 				
-				response.getProductoResponse().setProductos(list);
+				response.getProductoResponse().setProductos(productos);
 				response.setMetadata("Respuesta ok", "00", "Productos encontrados");
 				
 			} else {

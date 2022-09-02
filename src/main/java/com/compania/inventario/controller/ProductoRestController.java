@@ -28,14 +28,21 @@ public class ProductoRestController {
 	@Autowired
 	ProductoService productoService;
 	
+	@GetMapping("/productos")
+	public ResponseEntity<ProductoResponseRest> recuperarProductos(){
+		
+		ResponseEntity<ProductoResponseRest> responseEntity = productoService.recuperarProductos();
+		return responseEntity;
+	}
+	
 	@GetMapping("/productos/{id}")
 	public ResponseEntity<ProductoResponseRest> obtenerProductosPorId(@PathVariable Long id){
 		ResponseEntity<ProductoResponseRest> productoResponse = productoService.buscarProductoPorId(id);
 		return productoResponse;
 	}
 	
-	@GetMapping("/productos/filter/{nombre}")
-	public ResponseEntity<ProductoResponseRest> searchByName(@PathVariable String nombre){
+	@GetMapping("/productos/nombre/{nombre}")
+	public ResponseEntity<ProductoResponseRest> buscarProductoPorNombre(@PathVariable String nombre){
 		ResponseEntity<ProductoResponseRest> response = productoService.buscarProductoPorNombre(nombre);
 		return response;
 	}
@@ -59,9 +66,8 @@ public class ProductoRestController {
 	}
 	
 	@DeleteMapping("/productos/{id}")
-	public ResponseEntity<ProductoResponseRest> borrarCategoria(@PathVariable Long id){
+	public ResponseEntity<ProductoResponseRest> borrarProducto(@PathVariable Long id){
 		ResponseEntity<ProductoResponseRest> productoResponse = productoService.borrarProducto(id);
 		return productoResponse;
 	}
-
 }
